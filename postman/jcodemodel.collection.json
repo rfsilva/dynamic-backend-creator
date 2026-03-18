@@ -1,0 +1,398 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-0002-4000-8000-jcodemodel-col",
+    "name": "jcodemodel - CRUD Generator",
+    "description": "Testa o endpoint POST /api/generate que gera aplicações CRUD via JCodeModel.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Generate",
+      "item": [
+        {
+          "name": "Gerar CRUD - Product (exemplo completo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Body contém entityName', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.entityName).to.eql('Product');",
+                  "});",
+                  "",
+                  "pm.test('generatedFiles não está vazio', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.generatedFiles).to.be.an('array').that.is.not.empty;",
+                  "});",
+                  "",
+                  "pm.test('outputDirectory está presente', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.outputDirectory).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    pm.environment.set('lastOutputDirectory', json.outputDirectory);",
+                  "    console.log('Arquivos gerados:', json.generatedFiles.join('\\n'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"outputDirectory\": \"{{outputDirectory}}/product\",\n  \"fields\": [\n    { \"name\": \"name\",        \"type\": \"STRING\",           \"required\": true,  \"maxLength\": 150 },\n    { \"name\": \"description\", \"type\": \"STRING\",           \"required\": false, \"maxLength\": 500 },\n    { \"name\": \"price\",       \"type\": \"BIG_DECIMAL\",      \"required\": true  },\n    { \"name\": \"quantity\",    \"type\": \"INTEGER\",          \"required\": true  },\n    { \"name\": \"active\",      \"type\": \"BOOLEAN\",          \"required\": false },\n    { \"name\": \"createdAt\",   \"type\": \"LOCAL_DATE_TIME\",  \"required\": false },\n    { \"name\": \"expiresOn\",   \"type\": \"LOCAL_DATE\",       \"required\": false }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Gera CRUD completo para a entidade Product com vários tipos de campo."
+          }
+        },
+        {
+          "name": "Gerar CRUD - Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Body contém entityName Customer', function () {",
+                  "    pm.expect(pm.response.json().entityName).to.eql('Customer');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Customer\",\n  \"packageName\": \"com.example.customer\",\n  \"outputDirectory\": \"{{outputDirectory}}/customer\",\n  \"fields\": [\n    { \"name\": \"firstName\",   \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 100 },\n    { \"name\": \"lastName\",    \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 100 },\n    { \"name\": \"email\",       \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 255 },\n    { \"name\": \"birthDate\",   \"type\": \"LOCAL_DATE\",      \"required\": false },\n    { \"name\": \"creditLimit\", \"type\": \"BIG_DECIMAL\",     \"required\": false },\n    { \"name\": \"active\",      \"type\": \"BOOLEAN\",         \"required\": false }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Gera CRUD para entidade Customer."
+          }
+        },
+        {
+          "name": "Gerar CRUD - OrderItem",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"OrderItem\",\n  \"packageName\": \"com.example.order\",\n  \"outputDirectory\": \"{{outputDirectory}}/orderitem\",\n  \"fields\": [\n    { \"name\": \"orderId\",     \"type\": \"LONG\",        \"required\": true  },\n    { \"name\": \"productId\",   \"type\": \"LONG\",        \"required\": true  },\n    { \"name\": \"quantity\",    \"type\": \"INTEGER\",     \"required\": true  },\n    { \"name\": \"unitPrice\",   \"type\": \"BIG_DECIMAL\", \"required\": true  },\n    { \"name\": \"discount\",    \"type\": \"DOUBLE\",      \"required\": false },\n    { \"name\": \"notes\",       \"type\": \"STRING\",      \"required\": false, \"maxLength\": 300 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Gera CRUD para entidade OrderItem."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Erros - Validação",
+      "item": [
+        {
+          "name": "Erro - entityName ausente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Body contém errors de validação', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.errors).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packageName\": \"com.example.test\",\n  \"fields\": [\n    { \"name\": \"name\", \"type\": \"STRING\", \"required\": true }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 400 pois entityName está ausente."
+          }
+        },
+        {
+          "name": "Erro - entityName com minúscula",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Erro no campo entityName', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.errors).to.have.property('entityName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"product\",\n  \"packageName\": \"com.example.product\",\n  \"fields\": [\n    { \"name\": \"name\", \"type\": \"STRING\", \"required\": true }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 400 pois entityName deve começar com maiúscula."
+          }
+        },
+        {
+          "name": "Erro - packageName inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Erro no campo packageName', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.errors).to.have.property('packageName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"Com.Example.Invalid\",\n  \"fields\": [\n    { \"name\": \"name\", \"type\": \"STRING\", \"required\": true }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 400 pois packageName contém maiúsculas."
+          }
+        },
+        {
+          "name": "Erro - fields vazio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Erro no campo fields', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.errors).to.have.property('fields');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"fields\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 400 pois fields não pode ser vazio."
+          }
+        },
+        {
+          "name": "Erro - field sem name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"fields\": [\n    { \"type\": \"STRING\", \"required\": true }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 400 pois o field não tem name."
+          }
+        },
+        {
+          "name": "Erro - field type inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"fields\": [\n    { \"name\": \"name\", \"type\": \"INVALID_TYPE\", \"required\": true }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 400 pois INVALID_TYPE não é um FieldType válido."
+          }
+        },
+        {
+          "name": "Erro - body inválido (JSON malformado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 4xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(400, 499);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ this is not valid json }",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Deve retornar 4xx pois o body não é JSON válido."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [],
+  "_postman_exported_at": "2026-03-18T00:00:00.000Z",
+  "_postman_exported_using": "Postman/10"
+}
