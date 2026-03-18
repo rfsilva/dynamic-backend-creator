@@ -1,5 +1,6 @@
 package com.rfsilva.jcodemodel.service.generator;
 
+import com.rfsilva.jcodemodel.dto.DatabaseType;
 import com.rfsilva.jcodemodel.dto.EntityDefinition;
 import com.rfsilva.jcodemodel.dto.FieldDefinition;
 import com.sun.codemodel.JCodeModel;
@@ -8,6 +9,8 @@ import com.sun.codemodel.JPackage;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,9 +28,12 @@ public class GenerationContext {
     @Setter private JDefinedClass requestDto;
     @Setter private JDefinedClass responseDto;
     @Setter private JDefinedClass notFoundException;
+    @Setter private JDefinedClass globalExceptionHandler;
     @Setter private JDefinedClass repositoryClass;
     @Setter private JDefinedClass mapperClass;
     @Setter private JDefinedClass serviceClass;
+
+    private final List<ChildGenerationContext> childContexts = new ArrayList<>();
 
     public GenerationContext(JCodeModel cm, EntityDefinition definition) {
         this.cm = cm;
@@ -48,7 +54,23 @@ public class GenerationContext {
         return definition.getFields();
     }
 
+    public DatabaseType databaseType() {
+        return definition.getDatabase() != null ? definition.getDatabase() : DatabaseType.H2;
+    }
+
+    public int port() {
+        return definition.getPort();
+    }
+
     public JPackage subPackage(String suffix) {
         return cm._package(pkg() + "." + suffix);
+    }
+
+    public void addChildContext(ChildGenerationContext childCtx) {
+        childContexts.add(childCtx);
+    }
+
+    public List<ChildGenerationContext> getChildContexts() {
+        return Collections.unmodifiableList(childContexts);
     }
 }

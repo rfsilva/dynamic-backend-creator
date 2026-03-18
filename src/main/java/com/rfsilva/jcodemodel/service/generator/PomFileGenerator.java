@@ -1,5 +1,6 @@
 package com.rfsilva.jcodemodel.service.generator;
 
+import com.rfsilva.jcodemodel.dto.DatabaseType;
 import org.springframework.stereotype.Component;
 
 import java.io.FileWriter;
@@ -10,10 +11,11 @@ public class PomFileGenerator implements FileGenerator {
 
     @Override
     public String generate(GenerationContext ctx, String outputDir) throws IOException {
-        String entityName = ctx.entityName();
-        String groupId    = ctx.pkg();
-        String artifactId = entityName.toLowerCase() + "-service";
-        String mainClass  = ctx.pkg() + "." + entityName + "Application";
+        String entityName  = ctx.entityName();
+        String groupId     = ctx.pkg();
+        String artifactId  = entityName.toLowerCase() + "-service";
+        String mainClass   = ctx.pkg() + "." + entityName + "Application";
+        String dbDependency = buildDbDependency(ctx.databaseType());
 
         String content = """
                 <?xml version="1.0" encoding="UTF-8"?>
@@ -47,11 +49,7 @@ public class PomFileGenerator implements FileGenerator {
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-starter-validation</artifactId>
                         </dependency>
-                        <dependency>
-                            <groupId>com.h2database</groupId>
-                            <artifactId>h2</artifactId>
-                            <scope>runtime</scope>
-                        </dependency>
+                %s
                         <dependency>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -67,12 +65,46 @@ public class PomFileGenerator implements FileGenerator {
                         </plugins>
                     </build>
                 </project>
-                """.formatted(groupId, artifactId, mainClass);
+                """.formatted(groupId, artifactId, mainClass, dbDependency);
 
-        String filePath = outputDir + "/pom.xml";
-        try (FileWriter fw = new FileWriter(filePath)) {
+        try (FileWriter fw = new FileWriter(outputDir + "/pom.xml")) {
             fw.write(content);
         }
         return "pom.xml";
+    }
+
+    private String buildDbDependency(DatabaseType db) {
+        return switch (db) {
+            case H2 -> """
+                            <dependency>
+                                <groupId>com.h2database</groupId>
+                                <artifactId>h2</artifactId>
+                                <scope>runtime</scope>
+                            </dependency>""";
+            case POSTGRESQL -> """
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>postgresql</artifactId>
+                                <scope>runtime</scope>
+                            </dependency>""";
+            case MYSQL -> """
+                            <dependency>
+                                <groupId>com.mysql</groupId>
+                                <artifactId>mysql-connector-j</artifactId>
+                                <scope>runtime</scope>
+                            </dependency>""";
+            case MARIADB -> """
+                            <dependency>
+                                <groupId>org.mariadb.jdbc</groupId>
+                                <artifactId>mariadb-java-client</artifactId>
+                                <scope>runtime</scope>
+                            </dependency>""";
+            case MSSQL -> """
+                            <dependency>
+                                <groupId>com.microsoft.sqlserver</groupId>
+                                <artifactId>mssql-jdbc</artifactId>
+                                <scope>runtime</scope>
+                            </dependency>""";
+        };
     }
 }

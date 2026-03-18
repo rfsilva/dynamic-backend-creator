@@ -1,5 +1,6 @@
 package com.rfsilva.jcodemodel.service;
 
+import com.rfsilva.jcodemodel.dto.ChildEntityDefinition;
 import com.rfsilva.jcodemodel.dto.EntityDefinition;
 import com.rfsilva.jcodemodel.dto.GenerationResult;
 import com.rfsilva.jcodemodel.exception.CodeGenerationException;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,21 +25,38 @@ public class CodeGeneratorService {
     private static final String DEFAULT_OUTPUT_DIR =
             System.getProperty("java.io.tmpdir") + "/jcodemodel-generated";
 
-    // Java class generators
-    private final EntityClassGenerator              entityGenerator;
-    private final RequestDtoClassGenerator          requestDtoGenerator;
-    private final ResponseDtoClassGenerator         responseDtoGenerator;
-    private final NotFoundExceptionClassGenerator   notFoundExceptionGenerator;
-    private final GlobalExceptionHandlerClassGenerator globalExceptionHandlerGenerator;
-    private final RepositoryClassGenerator          repositoryGenerator;
-    private final MapperClassGenerator              mapperGenerator;
-    private final ServiceClassGenerator             serviceGenerator;
-    private final ControllerClassGenerator          controllerGenerator;
-    private final MainApplicationClassGenerator     mainApplicationGenerator;
+    // ── Parent class generators ───────────────────────────────────────────────
+    private final EntityClassGenerator                   entityGenerator;
+    private final RequestDtoClassGenerator               requestDtoGenerator;
+    private final ResponseDtoClassGenerator              responseDtoGenerator;
+    private final NotFoundExceptionClassGenerator        notFoundExceptionGenerator;
+    private final GlobalExceptionHandlerClassGenerator   globalExceptionHandlerGenerator;
+    private final RepositoryClassGenerator               repositoryGenerator;
+    private final MapperClassGenerator                   mapperGenerator;
+    private final ServiceClassGenerator                  serviceGenerator;
+    private final ControllerClassGenerator               controllerGenerator;
+    private final MainApplicationClassGenerator          mainApplicationGenerator;
 
-    // Non-Java file generators
-    private final PomFileGenerator                  pomFileGenerator;
-    private final ApplicationPropertiesFileGenerator applicationPropertiesGenerator;
+    // ── Child class generators ────────────────────────────────────────────────
+    private final ChildEntityClassGenerator              childEntityGenerator;
+    private final ChildRequestDtoClassGenerator          childRequestDtoGenerator;
+    private final ChildResponseDtoClassGenerator         childResponseDtoGenerator;
+    private final ChildNotFoundExceptionClassGenerator   childNotFoundExceptionGenerator;
+    private final ChildRepositoryClassGenerator          childRepositoryGenerator;
+    private final ChildMapperClassGenerator              childMapperGenerator;
+    private final ChildServiceClassGenerator             childServiceGenerator;
+    private final ChildControllerClassGenerator          childControllerGenerator;
+
+    // ── File generators ───────────────────────────────────────────────────────
+    private final PomFileGenerator                       pomFileGenerator;
+    private final ApplicationYmlFileGenerator            applicationYmlGenerator;
+    private final DockerComposeFileGenerator             dockerComposeGenerator;
+    private final ReadmeFileGenerator                    readmeGenerator;
+    private final GitignoreFileGenerator                 gitignoreGenerator;
+    private final PostmanEnvironmentFileGenerator        postmanEnvironmentGenerator;
+    private final PostmanCollectionFileGenerator         postmanCollectionGenerator;
+
+    // =========================================================================
 
     public GenerationResult generate(EntityDefinition definition) {
         String outputDir = resolveOutputDir(definition);
@@ -47,7 +66,13 @@ public class CodeGeneratorService {
         try {
             generatedFiles.addAll(generateJavaClasses(definition, outputDir));
             generatedFiles.add(pomFileGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
-            generatedFiles.add(applicationPropertiesGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
+            generatedFiles.add(applicationYmlGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
+            String dockerCompose = dockerComposeGenerator.generate(buildContext(new JCodeModel(), definition), outputDir);
+            if (dockerCompose != null) generatedFiles.add(dockerCompose);
+            generatedFiles.add(readmeGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
+            generatedFiles.add(gitignoreGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
+            generatedFiles.add(postmanEnvironmentGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
+            generatedFiles.add(postmanCollectionGenerator.generate(buildContext(new JCodeModel(), definition), outputDir));
         } catch (JClassAlreadyExistsException e) {
             throw new CodeGenerationException("Class already exists: " + e.getMessage(), e);
         } catch (IOException e) {
@@ -57,33 +82,41 @@ public class CodeGeneratorService {
         return GenerationResult.builder()
                 .entityName(definition.getEntityName())
                 .outputDirectory(outputDir)
-                .generatedFiles(generatedFiles)
+                .generatedFiles(generatedFiles.stream().filter(Objects::nonNull).toList())
                 .message("CRUD application generated successfully")
                 .build();
     }
 
-    // -------------------------------------------------------------------------
+    // =========================================================================
     // Orchestration
-    // -------------------------------------------------------------------------
+    // =========================================================================
 
     private List<String> generateJavaClasses(EntityDefinition definition, String outputDir)
             throws JClassAlreadyExistsException, IOException {
 
-        JCodeModel cm = new JCodeModel();
+        JCodeModel cm  = new JCodeModel();
         GenerationContext ctx = buildContext(cm, definition);
 
-        // Each generator populates ctx so the next one can reference prior results
+        // ── Parent entity and its layers ──────────────────────────────────────
         ctx.setEntityClass(entityGenerator.generate(ctx));
         ctx.setRequestDto(requestDtoGenerator.generate(ctx));
         ctx.setResponseDto(responseDtoGenerator.generate(ctx));
         ctx.setNotFoundException(notFoundExceptionGenerator.generate(ctx));
-        globalExceptionHandlerGenerator.generate(ctx);          // result not referenced by others
+        ctx.setGlobalExceptionHandler(globalExceptionHandlerGenerator.generate(ctx));
         ctx.setRepositoryClass(repositoryGenerator.generate(ctx));
         ctx.setMapperClass(mapperGenerator.generate(ctx));
         ctx.setServiceClass(serviceGenerator.generate(ctx));
-        controllerGenerator.generate(ctx);                      // result not referenced by others
-        mainApplicationGenerator.generate(ctx);                 // result not referenced by others
+        controllerGenerator.generate(ctx);
+        mainApplicationGenerator.generate(ctx);
 
+        // ── Child entities ────────────────────────────────────────────────────
+        if (definition.getChildren() != null) {
+            for (ChildEntityDefinition childDef : definition.getChildren()) {
+                generateChild(ctx, childDef);
+            }
+        }
+
+        // ── Write all .java files ─────────────────────────────────────────────
         File srcDir = new File(outputDir + "/src/main/java");
         srcDir.mkdirs();
         cm.build(srcDir);
@@ -93,9 +126,31 @@ public class CodeGeneratorService {
         return files;
     }
 
-    // -------------------------------------------------------------------------
+    private void generateChild(GenerationContext ctx, ChildEntityDefinition childDef)
+            throws JClassAlreadyExistsException {
+
+        ChildGenerationContext childCtx = new ChildGenerationContext(ctx, childDef);
+
+        // Child entity wires @ManyToOne on child + @OneToMany on parent
+        childCtx.setEntityClass(childEntityGenerator.generate(childCtx));
+        childCtx.setRequestDto(childRequestDtoGenerator.generate(childCtx));
+        childCtx.setResponseDto(childResponseDtoGenerator.generate(childCtx));
+        childCtx.setNotFoundException(childNotFoundExceptionGenerator.generate(childCtx));
+
+        // Register child's NotFoundException in the shared GlobalExceptionHandler
+        globalExceptionHandlerGenerator.addNotFoundHandler(ctx, childCtx.getNotFoundException());
+
+        childCtx.setRepositoryClass(childRepositoryGenerator.generate(childCtx));
+        childCtx.setMapperClass(childMapperGenerator.generate(childCtx));
+        childCtx.setServiceClass(childServiceGenerator.generate(childCtx));
+        childControllerGenerator.generate(childCtx);
+
+        ctx.addChildContext(childCtx);
+    }
+
+    // =========================================================================
     // Helpers
-    // -------------------------------------------------------------------------
+    // =========================================================================
 
     private GenerationContext buildContext(JCodeModel cm, EntityDefinition definition) {
         return new GenerationContext(cm, definition);

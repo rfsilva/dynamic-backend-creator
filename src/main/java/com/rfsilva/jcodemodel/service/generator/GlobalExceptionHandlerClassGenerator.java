@@ -33,6 +33,18 @@ public class GlobalExceptionHandlerClassGenerator extends AbstractClassGenerator
         return cls;
     }
 
+    /**
+     * Adds a specific @ExceptionHandler method for a child entity's NotFoundException.
+     * Called by CodeGeneratorService after each child's exception class is generated.
+     */
+    public void addNotFoundHandler(GenerationContext ctx, JDefinedClass childNotFoundEx) {
+        JCodeModel cm        = ctx.getCm();
+        JDefinedClass handler = ctx.getGlobalExceptionHandler();
+        JClass problemDetail  = cm.ref("org.springframework.http.ProblemDetail");
+        JClass httpStatus     = cm.ref("org.springframework.http.HttpStatus");
+        buildNotFoundHandler(cm, handler, problemDetail, httpStatus, childNotFoundEx);
+    }
+
     private void buildNotFoundHandler(JCodeModel cm, JDefinedClass cls,
                                        JClass problemDetail, JClass httpStatus,
                                        JDefinedClass notFoundEx) {
