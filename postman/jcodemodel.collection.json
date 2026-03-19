@@ -33,7 +33,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"H2\",\n  \"port\": 8090,\n  \"outputDirectory\": \"{{outputDirectory}}/product-h2\",\n  \"fields\": [\n    { \"name\": \"name\",        \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 150 },\n    { \"name\": \"description\", \"type\": \"STRING\",          \"required\": false, \"maxLength\": 500 },\n    { \"name\": \"price\",       \"type\": \"BIG_DECIMAL\",     \"required\": true  },\n    { \"name\": \"quantity\",    \"type\": \"INTEGER\",         \"required\": true  },\n    { \"name\": \"active\",      \"type\": \"BOOLEAN\",         \"required\": false },\n    { \"name\": \"createdAt\",   \"type\": \"LOCAL_DATE_TIME\", \"required\": false }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"H2\",\n  \"backendPort\": 8090,\n  \"frontendPort\": 4200,\n  \"outputDirectory\": \"{{outputDirectory}}/product-h2\",\n  \"fields\": [\n    { \"name\": \"name\",        \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 150 },\n    { \"name\": \"description\", \"type\": \"STRING\",          \"required\": false, \"maxLength\": 500 },\n    { \"name\": \"price\",       \"type\": \"BIG_DECIMAL\",     \"required\": true  },\n    { \"name\": \"quantity\",    \"type\": \"INTEGER\",         \"required\": true  },\n    { \"name\": \"active\",      \"type\": \"BOOLEAN\",         \"required\": false },\n    { \"name\": \"createdAt\",   \"type\": \"LOCAL_DATE_TIME\", \"required\": false }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -68,7 +68,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"SalesOrder\",\n  \"packageName\": \"com.example.sales\",\n  \"database\": \"H2\",\n  \"port\": 8091,\n  \"outputDirectory\": \"{{outputDirectory}}/salesorder-h2\",\n  \"fields\": [\n    { \"name\": \"customerName\", \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 200 },\n    { \"name\": \"orderDate\",    \"type\": \"LOCAL_DATE\",      \"required\": true  },\n    { \"name\": \"totalAmount\",  \"type\": \"BIG_DECIMAL\",     \"required\": false },\n    { \"name\": \"status\",       \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 50  }\n  ],\n  \"children\": [\n    {\n      \"entityName\": \"OrderItem\",\n      \"fields\": [\n        { \"name\": \"productName\", \"type\": \"STRING\",      \"required\": true,  \"maxLength\": 150 },\n        { \"name\": \"quantity\",    \"type\": \"INTEGER\",     \"required\": true  },\n        { \"name\": \"unitPrice\",   \"type\": \"BIG_DECIMAL\", \"required\": true  },\n        { \"name\": \"discount\",    \"type\": \"DOUBLE\",      \"required\": false }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"SalesOrder\",\n  \"packageName\": \"com.example.sales\",\n  \"database\": \"H2\",\n  \"backendPort\": 8091,\n  \"frontendPort\": 4201,\n  \"outputDirectory\": \"{{outputDirectory}}/salesorder-h2\",\n  \"fields\": [\n    { \"name\": \"customerName\", \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 200 },\n    { \"name\": \"orderDate\",    \"type\": \"LOCAL_DATE\",      \"required\": true  },\n    { \"name\": \"totalAmount\",  \"type\": \"BIG_DECIMAL\",     \"required\": false },\n    { \"name\": \"status\",       \"type\": \"STRING\",          \"required\": true,  \"maxLength\": 50  }\n  ],\n  \"children\": [\n    {\n      \"entityName\": \"OrderItem\",\n      \"fields\": [\n        { \"name\": \"productName\", \"type\": \"STRING\",      \"required\": true,  \"maxLength\": 150 },\n        { \"name\": \"quantity\",    \"type\": \"INTEGER\",     \"required\": true  },\n        { \"name\": \"unitPrice\",   \"type\": \"BIG_DECIMAL\", \"required\": true  },\n        { \"name\": \"discount\",    \"type\": \"DOUBLE\",      \"required\": false }\n      ]\n    }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -97,7 +97,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Usuario\",\n  \"packageName\": \"com.example.usuario\",\n  \"database\": \"H2\",\n  \"port\": 8092,\n  \"outputDirectory\": \"{{outputDirectory}}/usuario-h2\",\n  \"fields\": [\n    { \"name\": \"nome\",  \"type\": \"STRING\", \"required\": true,  \"maxLength\": 150 },\n    { \"name\": \"email\", \"type\": \"STRING\", \"required\": true,  \"maxLength\": 255 },\n    { \"name\": \"cpf\",   \"type\": \"STRING\", \"required\": true,  \"maxLength\": 14  },\n    { \"name\": \"ativo\", \"type\": \"BOOLEAN\",\"required\": false }\n  ],\n  \"children\": [\n    {\n      \"entityName\": \"Endereco\",\n      \"fields\": [\n        { \"name\": \"logradouro\", \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 200 },\n        { \"name\": \"numero\",     \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 10  },\n        { \"name\": \"cep\",        \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 10  },\n        { \"name\": \"cidade\",     \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 100 },\n        { \"name\": \"estado\",     \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 2   },\n        { \"name\": \"principal\",  \"type\": \"BOOLEAN\", \"required\": false }\n      ]\n    },\n    {\n      \"entityName\": \"Telefone\",\n      \"fields\": [\n        { \"name\": \"numero\", \"type\": \"STRING\", \"required\": true,  \"maxLength\": 20 },\n        { \"name\": \"tipo\",   \"type\": \"STRING\", \"required\": true,  \"maxLength\": 20 }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"Usuario\",\n  \"packageName\": \"com.example.usuario\",\n  \"database\": \"H2\",\n  \"backendPort\": 8092,\n  \"frontendPort\": 4202,\n  \"outputDirectory\": \"{{outputDirectory}}/usuario-h2\",\n  \"fields\": [\n    { \"name\": \"nome\",  \"type\": \"STRING\", \"required\": true,  \"maxLength\": 150 },\n    { \"name\": \"email\", \"type\": \"STRING\", \"required\": true,  \"maxLength\": 255 },\n    { \"name\": \"cpf\",   \"type\": \"STRING\", \"required\": true,  \"maxLength\": 14  },\n    { \"name\": \"ativo\", \"type\": \"BOOLEAN\",\"required\": false }\n  ],\n  \"children\": [\n    {\n      \"entityName\": \"Endereco\",\n      \"fields\": [\n        { \"name\": \"logradouro\", \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 200 },\n        { \"name\": \"numero\",     \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 10  },\n        { \"name\": \"cep\",        \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 10  },\n        { \"name\": \"cidade\",     \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 100 },\n        { \"name\": \"estado\",     \"type\": \"STRING\",  \"required\": true,  \"maxLength\": 2   },\n        { \"name\": \"principal\",  \"type\": \"BOOLEAN\", \"required\": false }\n      ]\n    },\n    {\n      \"entityName\": \"Telefone\",\n      \"fields\": [\n        { \"name\": \"numero\", \"type\": \"STRING\", \"required\": true,  \"maxLength\": 20 },\n        { \"name\": \"tipo\",   \"type\": \"STRING\", \"required\": true,  \"maxLength\": 20 }\n      ]\n    }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -134,7 +134,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"POSTGRESQL\",\n  \"port\": 8093,\n  \"outputDirectory\": \"{{outputDirectory}}/product-postgres\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"POSTGRESQL\",\n  \"backendPort\": 8093,\n  \"frontendPort\": 4203,\n  \"outputDirectory\": \"{{outputDirectory}}/product-postgres\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -159,7 +159,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"MYSQL\",\n  \"port\": 8094,\n  \"outputDirectory\": \"{{outputDirectory}}/product-mysql\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"MYSQL\",\n  \"backendPort\": 8094,\n  \"frontendPort\": 4204,\n  \"outputDirectory\": \"{{outputDirectory}}/product-mysql\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -184,7 +184,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"MARIADB\",\n  \"port\": 8095,\n  \"outputDirectory\": \"{{outputDirectory}}/product-mariadb\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"MARIADB\",\n  \"backendPort\": 8095,\n  \"frontendPort\": 4205,\n  \"outputDirectory\": \"{{outputDirectory}}/product-mariadb\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -209,7 +209,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"MSSQL\",\n  \"port\": 8096,\n  \"outputDirectory\": \"{{outputDirectory}}/product-mssql\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"MSSQL\",\n  \"backendPort\": 8096,\n  \"frontendPort\": 4206,\n  \"outputDirectory\": \"{{outputDirectory}}/product-mssql\",\n  \"fields\": [\n    { \"name\": \"name\",  \"type\": \"STRING\",      \"required\": true, \"maxLength\": 150 },\n    { \"name\": \"price\", \"type\": \"BIG_DECIMAL\", \"required\": true  }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -235,7 +235,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"SalesOrder\",\n  \"packageName\": \"com.example.sales\",\n  \"database\": \"POSTGRESQL\",\n  \"port\": 8097,\n  \"outputDirectory\": \"{{outputDirectory}}/salesorder-postgres\",\n  \"fields\": [\n    { \"name\": \"customerName\", \"type\": \"STRING\",     \"required\": true, \"maxLength\": 200 },\n    { \"name\": \"orderDate\",    \"type\": \"LOCAL_DATE\", \"required\": true  },\n    { \"name\": \"status\",       \"type\": \"STRING\",     \"required\": true, \"maxLength\": 50  }\n  ],\n  \"children\": [\n    {\n      \"entityName\": \"OrderItem\",\n      \"fields\": [\n        { \"name\": \"productName\", \"type\": \"STRING\",      \"required\": true,  \"maxLength\": 150 },\n        { \"name\": \"quantity\",    \"type\": \"INTEGER\",     \"required\": true  },\n        { \"name\": \"unitPrice\",   \"type\": \"BIG_DECIMAL\", \"required\": true  }\n      ]\n    }\n  ]\n}",
+              "raw": "{\n  \"entityName\": \"SalesOrder\",\n  \"packageName\": \"com.example.sales\",\n  \"database\": \"POSTGRESQL\",\n  \"backendPort\": 8097,\n  \"frontendPort\": 4207,\n  \"outputDirectory\": \"{{outputDirectory}}/salesorder-postgres\",\n  \"fields\": [\n    { \"name\": \"customerName\", \"type\": \"STRING\",     \"required\": true, \"maxLength\": 200 },\n    { \"name\": \"orderDate\",    \"type\": \"LOCAL_DATE\", \"required\": true  },\n    { \"name\": \"status\",       \"type\": \"STRING\",     \"required\": true, \"maxLength\": 50  }\n  ],\n  \"children\": [\n    {\n      \"entityName\": \"OrderItem\",\n      \"fields\": [\n        { \"name\": \"productName\", \"type\": \"STRING\",      \"required\": true,  \"maxLength\": 150 },\n        { \"name\": \"quantity\",    \"type\": \"INTEGER\",     \"required\": true  },\n        { \"name\": \"unitPrice\",   \"type\": \"BIG_DECIMAL\", \"required\": true  }\n      ]\n    }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -272,7 +272,7 @@
           }
         },
         {
-          "name": "Erro - port inválida",
+          "name": "Erro - backendPort inválida",
           "event": [
             {
               "listen": "test",
@@ -289,7 +289,31 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"H2\",\n  \"port\": 99999,\n  \"fields\": [{ \"name\": \"name\", \"type\": \"STRING\", \"required\": true }]\n}",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"H2\",\n  \"backendPort\": 99999,\n  \"fields\": [{ \"name\": \"name\", \"type\": \"STRING\", \"required\": true }]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
+          }
+        },
+        {
+          "name": "Erro - frontendPort inválida",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Product\",\n  \"packageName\": \"com.example.product\",\n  \"database\": \"H2\",\n  \"frontendPort\": 99999,\n  \"fields\": [{ \"name\": \"name\", \"type\": \"STRING\", \"required\": true }]\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/api/generate", "host": ["{{baseUrl}}"], "path": ["api", "generate"] }
@@ -370,6 +394,6 @@
       ]
     }
   ],
-  "_postman_exported_at": "2026-03-18T00:00:00.000Z",
+  "_postman_exported_at": "2026-03-19T00:00:00.000Z",
   "_postman_exported_using": "Postman/10"
 }

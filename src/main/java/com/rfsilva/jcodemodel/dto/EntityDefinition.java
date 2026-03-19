@@ -39,8 +39,13 @@ public class EntityDefinition {
 
     private String outputDirectory;
 
-    /** HTTP port for the generated application. Defaults to 8080. */
-    @Min(value = 1, message = "Port must be between 1 and 65535")
-    @Max(value = 65535, message = "Port must be between 1 and 65535")
-    private int port = 8080;
+    /** HTTP port for the generated backend application. Defaults to 8080. */
+    @Min(value = 1, message = "Backend port must be between 1 and 65535")
+    @Max(value = 65535, message = "Backend port must be between 1 and 65535")
+    private int backendPort = 8080;
+
+    /** HTTP port for the generated frontend application. Defaults to 4200. */
+    @Min(value = 1, message = "Frontend port must be between 1 and 65535")
+    @Max(value = 65535, message = "Frontend port must be between 1 and 65535")
+    private int frontendPort = 4200;
 }

@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mvn compile:*)"
+      "Bash(mvn compile:*)",
+      "Bash(ls *.java)",
+      "Bash(SVCDIR=\"c:/develop/rfsilva/jcodemodel/src/main/java/com/rfsilva/jcodemodel/service\")",
+      "Bash(__NEW_LINE_fe53a0227606ebe1__ sed:*)",
+      "Bash(__NEW_LINE_fe53a0227606ebe1__ grep:*)",
+      "Read(//c/tmp/jcodemodel-generated/product-h2/frontend/**)",
+      "Bash(npm audit:*)",
+      "Bash(npm show:*)",
+      "Bash(node -e \"const v=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(''''/dev/stdin'''',''''utf8''''\\)\\); console.log\\(v.filter\\(x=>x.startsWith\\(''''7.''''\\)\\).slice\\(-5\\).join\\(''''\\\\n''''\\)\\)\")"
     ]
   }
 }
