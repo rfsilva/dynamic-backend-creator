@@ -23,6 +23,7 @@ public class FrontendCodeGeneratorService {
     private final TsConfigFrontendGenerator       tsConfigGenerator;
     private final MainTsFrontendGenerator         mainTsGenerator;
     private final IndexHtmlFrontendGenerator      indexHtmlGenerator;
+    private final PublicFolderFrontendGenerator   publicFolderGenerator;
     private final StylesFrontendGenerator         stylesGenerator;
     private final EnvironmentFrontendGenerator    environmentGenerator;
     private final AppConfigFrontendGenerator      appConfigGenerator;
@@ -53,6 +54,7 @@ public class FrontendCodeGeneratorService {
         files.addAll(tsConfigGenerator.generate(ctx, frontendDir));
         files.addAll(mainTsGenerator.generate(ctx, frontendDir));
         files.addAll(indexHtmlGenerator.generate(ctx, frontendDir));
+        files.addAll(publicFolderGenerator.generate(ctx, frontendDir));
         files.addAll(stylesGenerator.generate(ctx, frontendDir));
         files.addAll(environmentGenerator.generate(ctx, frontendDir));
         files.addAll(appConfigGenerator.generate(ctx, frontendDir));

@@ -1,5 +1,6 @@
 package com.rfsilva.jcodemodel.service.generator.frontend;
 
+import com.rfsilva.jcodemodel.dto.ChildEntityDefinition;
 import com.rfsilva.jcodemodel.dto.FieldDefinition;
 import com.rfsilva.jcodemodel.service.generator.backend.GenerationContext;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,10 @@ public class EntityListComponentFrontendGenerator extends AbstractFrontendGenera
         String kebab     = toKebabCase(entity);
         String camel     = toCamelCase(entity);
         String listDir   = srcApp(kebab) + "/" + kebab + "-list";
+        List<ChildEntityDefinition> childList = children(ctx);
 
-        String ts   = buildTs(entity, kebab, camel, ctx.fields());
-        String html = buildHtml(entity, kebab, camel, ctx.fields());
+        String ts   = buildTs(entity, kebab, camel, ctx.fields(), childList);
+        String html = buildHtml(entity, kebab, camel, ctx.fields(), childList);
 
         return List.of(
             writeFile(frontendDir, listDir + "/" + kebab + "-list.component.ts",   ts),
@@ -31,12 +33,20 @@ public class EntityListComponentFrontendGenerator extends AbstractFrontendGenera
         );
     }
 
-    private String buildTs(String entity, String kebab, String camel, List<FieldDefinition> fields) {
+    private String buildTs(String entity, String kebab, String camel, List<FieldDefinition> fields, List<ChildEntityDefinition> childList) {
         StringBuilder columns = new StringBuilder();
         for (FieldDefinition f : fields) {
             columns.append("'").append(f.getName()).append("', ");
         }
         String displayedColumns = "['id', " + columns + "'actions']";
+
+        StringBuilder childMethods = new StringBuilder();
+        for (ChildEntityDefinition child : childList) {
+            String childKebab = toKebabCase(child.getEntityName());
+            childMethods.append("\n  onManage").append(child.getEntityName()).append("s(item: ").append(entity).append("): void {\n")
+                        .append("    this.router.navigate(['/").append(kebab).append("s', item.id, '").append(childKebab).append("s']);\n")
+                        .append("  }\n");
+        }
 
         return "import { Component, inject, OnInit, signal } from '@angular/core';\n"
              + "import { Router } from '@angular/router';\n"
@@ -45,6 +55,7 @@ public class EntityListComponentFrontendGenerator extends AbstractFrontendGenera
              + "import { MatIconModule } from '@angular/material/icon';\n"
              + "import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';\n"
              + "import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';\n"
+             + "import { MatTooltipModule } from '@angular/material/tooltip';\n"
              + "import { " + entity + "Service } from '../" + kebab + ".service';\n"
              + "import { " + entity + " } from '../" + kebab + ".model';\n\n"
              + "@Component({\n"
@@ -56,6 +67,7 @@ public class EntityListComponentFrontendGenerator extends AbstractFrontendGenera
              + "    MatIconModule,\n"
              + "    MatProgressSpinnerModule,\n"
              + "    MatSnackBarModule,\n"
+             + "    MatTooltipModule,\n"
              + "  ],\n"
              + "  templateUrl: './" + kebab + "-list.component.html',\n"
              + "  styleUrl: './" + kebab + "-list.component.scss',\n"
@@ -90,10 +102,11 @@ public class EntityListComponentFrontendGenerator extends AbstractFrontendGenera
              + "      error: () => this.snackBar.open('Error deleting " + entity + "', 'Close', { duration: 3000 }),\n"
              + "    });\n"
              + "  }\n"
+             + childMethods
              + "}\n";
     }
 
-    private String buildHtml(String entity, String kebab, String camel, List<FieldDefinition> fields) {
+    private String buildHtml(String entity, String kebab, String camel, List<FieldDefinition> fields, List<ChildEntityDefinition> childList) {
         StringBuilder sb = new StringBuilder();
         sb.append("<div class=\"page-container\">\n");
         sb.append("  <div class=\"action-bar\">\n");
@@ -126,12 +139,18 @@ public class EntityListComponentFrontendGenerator extends AbstractFrontendGenera
         sb.append("      <ng-container matColumnDef=\"actions\">\n");
         sb.append("        <th mat-header-cell *matHeaderCellDef>Actions</th>\n");
         sb.append("        <td mat-cell *matCellDef=\"let row\">\n");
-        sb.append("          <button mat-icon-button color=\"primary\" (click)=\"onEdit(row)\">\n");
+        sb.append("          <button mat-icon-button color=\"primary\" (click)=\"onEdit(row)\" matTooltip=\"Edit\">\n");
         sb.append("            <mat-icon>edit</mat-icon>\n");
         sb.append("          </button>\n");
-        sb.append("          <button mat-icon-button color=\"warn\" (click)=\"onDelete(row)\">\n");
+        sb.append("          <button mat-icon-button color=\"warn\" (click)=\"onDelete(row)\" matTooltip=\"Delete\">\n");
         sb.append("            <mat-icon>delete</mat-icon>\n");
         sb.append("          </button>\n");
+        for (ChildEntityDefinition child : childList) {
+            sb.append("          <button mat-icon-button (click)=\"onManage").append(child.getEntityName()).append("s(row)\"")
+              .append(" matTooltip=\"Manage ").append(child.getEntityName()).append("s\">\n");
+            sb.append("            <mat-icon>list_alt</mat-icon>\n");
+            sb.append("          </button>\n");
+        }
         sb.append("        </td>\n");
         sb.append("      </ng-container>\n\n");
 

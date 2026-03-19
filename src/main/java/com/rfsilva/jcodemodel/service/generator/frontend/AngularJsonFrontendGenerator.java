@@ -15,6 +15,7 @@ public class AngularJsonFrontendGenerator extends AbstractFrontendGenerator {
     @Override
     public List<String> generate(GenerationContext ctx, String frontendDir) throws IOException {
         String kebab = toKebabCase(ctx.entityName());
+        int frontendPort = ctx.frontendPort();
         String content = """
                 {
                   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
@@ -67,6 +68,9 @@ public class AngularJsonFrontendGenerator extends AbstractFrontendGenerator {
                         },
                         "serve": {
                           "builder": "@angular-devkit/build-angular:dev-server",
+                          "options": {
+                            "port": %d
+                          },
                           "configurations": {
                             "production": { "buildTarget": "%s-frontend:build:production" },
                             "development": { "buildTarget": "%s-frontend:build:development" }
@@ -87,7 +91,7 @@ public class AngularJsonFrontendGenerator extends AbstractFrontendGenerator {
                     }
                   }
                 }
-                """.formatted(kebab, kebab, kebab, kebab);
+                """.formatted(kebab, kebab, frontendPort, kebab, kebab);
 
         return List.of(writeFile(frontendDir, "angular.json", content));
     }
